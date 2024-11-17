@@ -1,0 +1,111 @@
+//este proyecto fue creado por Ethan, Christian y Ryan
+//conotroles: para moverse = W, S, A, D
+// F para atacar, B para bloquear 
+// Q para terminar el programa
+#include <iostream>
+#include <cstdlib>
+#include <ctime>
+
+using namespace std;
+
+class Player {
+public:
+    int x, y;
+    int health;
+    int coins;
+    Player() : x(0), y(0), health(100), coins(0) {}
+    void move(char direction) {
+        switch (direction) {
+            case 'w': y++; break;
+            case 's': y--; break;
+            case 'a': x--; break;
+            case 'd': x++; break;
+            default: cout << "Movimiento no válido!" << endl;
+        }
+    }
+    void attack() {
+        cout << "Atacaste al enemigo!" << endl;
+        coins += 20;
+        cout << "Ganaste 20 monedas. Monedas actuales: " << coins << endl;
+    }
+    void block() {
+        cout << "Bloqueaste el ataque del enemigo!" << endl;
+        coins += 10;
+        cout << "Ganaste 10 monedas. Monedas actuales: " << coins << endl;
+    }
+    void increaseHealth(int amount) {
+        health += amount;
+        if (health > 150) {
+            health = 150;
+        }
+    }
+    void buyHealth() {
+        int healthToBuy;
+        cout << "¿Cuántos puntos de vida quieres comprar? (5 monedas por cada 2 puntos de vida): ";
+        cin >> healthToBuy;
+        int cost = (healthToBuy / 2) * 5;
+        if (coins >= cost) {
+            increaseHealth(healthToBuy);
+            coins -= cost;
+            cout << "Compraste " << healthToBuy << " puntos de vida por " << cost << " monedas. Salud actual: " << health << ", Monedas actuales: " << coins << endl;
+        } else {
+            cout << "No tienes suficientes monedas para comprar esa cantidad de vida." << endl;
+        }
+    }
+};
+
+void displayPosition(Player &player) {
+    cout << "Estás en la posición (" << player.x << ", " << player.y << ")." << endl;
+    cout << "Salud: " << player.health << ", Monedas: " << player.coins << endl;
+}
+
+void randomEvent(Player &player) {
+    int event = rand() % 3;
+    switch (event) {
+        case 0: 
+            cout << "Encontraste un tesoro!" << endl; 
+            player.coins += 10;
+            cout << "Ganaste 10 monedas. Monedas actuales: " << player.coins << endl;
+            break;
+        case 1: 
+            cout << "Te atacó un monstruo!" << endl; 
+            cout << "¿Quieres atacar (f) o bloquear (b)? ";
+            char action;
+            cin >> action;
+            if (action == 'f') {
+                player.attack();
+            } else if (action == 'b') {
+                player.block();
+            } else {
+                cout << "Acción no válida, el monstruo te atacó!" << endl;
+                player.health -= 10;
+            }
+            break;
+        case 2: 
+            cout << "Encontraste un aliado!" << endl; 
+            player.buyHealth();
+            break;
+    }
+}
+
+int main() {
+    srand(time(0));
+    Player player;
+    char input;
+    cout << "Bienvenido a World Adventure!" << endl;
+    cout << "Usa 'w', 'a', 's', 'd' para moverte, 'f' para atacar, 'b' para bloquear. Escribe 'q' para salir." << endl;
+
+    while (true) {
+        displayPosition(player);
+        cout << "Ingresa tu movimiento: ";
+        cin >> input;
+        if (input == 'q') break;
+        if (input == 'f') player.attack();
+        else if (input == 'b') player.block();
+        else player.move(input);
+        randomEvent(player);
+    }
+
+    cout << "Gracias por jugar World Adventure!" << endl;
+    return 0;
+}
